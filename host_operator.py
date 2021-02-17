@@ -21,6 +21,7 @@ def sshwork():
         credencials and executes window operator over there into
         respective session.
     '''
+    print(argv)
     system("sshpass -p %s ssh -X %s@%s 'python3 window_operator.py %s %s %s'"\
         %(argv[5],argv[3],argv[4],argv[1],argv[2],argv[3]))
 

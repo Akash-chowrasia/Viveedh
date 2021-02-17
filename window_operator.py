@@ -37,7 +37,7 @@ def start_window_process(data):
     '''
     for i in range(data[2]):
         system("tmux new -d -s window%s-%d"%(argv[3],i))
-        system("tmux send-keys 'python3 a.py %s %d' ENTER"%(data[0],data[1]))
+        system("tmux send-keys 'python3 viewer.py %s %d' ENTER"%(data[0],data[1]))
 
 # Driver code
 if __name__ == "__main__":

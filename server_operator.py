@@ -3,29 +3,55 @@
     and desision making processes of server.
 '''
 from os import system
-import csv
+import subprocess
+#import csv
+from database.database_handler import *
+
+def url_encode(strng):
+    '''
+        This function incodes the url into the formate
+        of unicode code charecter.
+    '''
+    new_string = str(ord(strng[0]))
+    for char in strng[1::]:
+        new_string += '+'
+        new_string += str(ord(char))
+    return new_string
+
+def active_host_finder(host_list):
+    """
+    This function returns the list of active client.
+    it uses the concept of PING command to achive the target.
+    """
+    active_host = []
+    for host_data in host_list:
+        command = ['ping', '-c', '1', host_data[1]]
+        if subprocess.call(command) == 0:
+            active_host.append(host_data)
+    return active_host
 
 def data_collector():
     '''
         This function asks the server operator for URL
         and Number of views needed.
     '''
-    video_url = input("Enter URL : ")
-    views = int(input("Enter Number Of Views : "))
-    return [video_url, views]
+    #return [video_url, views]
+    return retrieve_tasks()[0]
 
 def host_finder():
     '''
-        This function reads the host_list and returns into
-        a list variable.
+        This function reads the host_list and returns active
+        hosts into a list variable.
     '''
-    temp = []
+    '''temp = []
     with open("host_list.csv") as file:
         thereader = csv.reader(file)
         for row in thereader:
             print(row)
             temp.append([f'{row[0]}', f'{row[1]}', f'{row[2]}'])
-    return temp
+    return active_host_finder(temp)'''
+    return active_host_finder(retrieve_clients())
+
 
 def views_parser(total_views,number_of_host):
     '''
@@ -42,9 +68,10 @@ def start_host_process(key_data):
         executes host_operator program for each host.
     '''
     for i in range(key_data[2]):
+        encoded = url_encode(key_data[0])
         system("tmux new -d -s host%i"%i)
         system("tmux send-keys 'python3 host_operator.py %s %d %s %s %s' ENTER"\
-            %(key_data[0],key_data[1],key_data[3][i][0],key_data[3][i][1],key_data[3][i][2]))
+            %(encoded,key_data[1],key_data[3][i][0],key_data[3][i][1],key_data[3][i][2]))
 
 # Driver code
 if __name__ == "__main__":
